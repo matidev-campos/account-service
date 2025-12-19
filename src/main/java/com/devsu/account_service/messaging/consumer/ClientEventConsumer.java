@@ -1,29 +1,43 @@
 package com.devsu.account_service.messaging.consumer;
 
+import com.devsu.account_service.config.RabbitMQConfig;
 import com.devsu.account_service.messaging.event.ClientCreatedEvent;
 import com.devsu.account_service.messaging.event.ClientDeletedEvent;
+import com.devsu.account_service.service.AccountService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class ClientEventConsumer {
 
-    @RabbitListener(queues = "account.client.queue")
-    public void handleClientCreated(ClientCreatedEvent event) {
-        System.out.println("📥 Client created event received: " + event);
+    private final AccountService accountService;
 
-        // TODO:
-        // - crear cuenta por defecto
-        // - persistir relación cliente-cuenta
+    public ClientEventConsumer(AccountService accountService) {
+        this.accountService = accountService;
     }
 
-    @RabbitListener(queues = "account.client.queue")
-    public void handleClientDeleted(ClientDeletedEvent event) {
-        System.out.println("📥 Client deleted event received: " + event);
+    @RabbitListener(queues = RabbitMQConfig.ACCOUNT_QUEUE)
+    public void handleEvent(Object event) {
 
-        // TODO:
-        // - deshabilitar cuentas
-        // - marcar como inactivas
+        if (event instanceof ClientCreatedEvent createdEvent) {
+            handleClientCreated(createdEvent);
+        }
+        else if (event instanceof ClientDeletedEvent deletedEvent) {
+            handleClientDeleted(deletedEvent);
+        }
+    }
+
+    private void handleClientCreated(ClientCreatedEvent event) {
+
+        accountService.handleClientCreated(event.clientId());
+    }
+
+    private void handleClientDeleted(ClientDeletedEvent event) {
+
+        accountService.handleClientDeleted(event.clientId());
     }
 }
+
+
 

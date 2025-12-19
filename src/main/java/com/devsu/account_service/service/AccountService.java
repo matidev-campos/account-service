@@ -15,5 +15,10 @@ public interface AccountService {
     List<AccountResponse> getAll();
 
     void delete(UUID id);
+
+    // async events
+    void handleClientCreated(UUID clientId);
+
+    void handleClientDeleted(UUID clientId);
 }
 
