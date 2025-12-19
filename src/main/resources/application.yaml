@@ -1,3 +1,36 @@
 spring:
   application:
     name: account-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/account_db
+    username: postgres
+    password: postgres
+
+    hikari:
+      connection-init-sql: SET TIME ZONE 'UTC'
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        auto-startup: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
