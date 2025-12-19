@@ -1,5 +1,7 @@
 package com.devsu.account_service.config;
 
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.amqp.core.*;
@@ -36,6 +38,11 @@ public class RabbitMQConfig {
                 .bind(accountClientQueue())
                 .to(clientExchange())
                 .with("client.deleted");
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }
 

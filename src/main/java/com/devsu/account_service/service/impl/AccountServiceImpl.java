@@ -3,12 +3,14 @@ package com.devsu.account_service.service.impl;
 import com.devsu.account_service.dto.request.AccountRequest;
 import com.devsu.account_service.dto.response.AccountResponse;
 import com.devsu.account_service.entity.Account;
+import com.devsu.account_service.entity.enums.AccountStatus;
 import com.devsu.account_service.exception.ResourceNotFoundException;
 import com.devsu.account_service.mapper.AccountMapper;
 import com.devsu.account_service.repository.AccountRepository;
 import com.devsu.account_service.service.AccountService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,6 +56,30 @@ public class AccountServiceImpl implements AccountService {
             throw new ResourceNotFoundException("Account not found: " + id);
         }
         accountRepository.deleteById(id);
+    }
+
+    @Override
+    public void handleClientCreated(UUID clientId) {
+
+        // regla simple: crear una cuenta inicial
+        Account account = new Account();
+        account.setClientId(clientId);
+        account.setInitialBalance(BigDecimal.ZERO);
+        account.setStatus(AccountStatus.ACTIVE);
+
+        accountRepository.save(account);
+    }
+
+    @Override
+    public void handleClientDeleted(UUID clientId) {
+
+        List<Account> accounts = accountRepository.findByClientId(clientId);
+
+        for (Account account : accounts) {
+            account.setStatus(AccountStatus.INACTIVE);
+        }
+
+        accountRepository.saveAll(accounts);
     }
 }
 
