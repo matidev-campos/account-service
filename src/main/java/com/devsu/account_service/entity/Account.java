@@ -26,7 +26,7 @@ public class Account {
     @Column(nullable = false)
     private BigDecimal initialBalance;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private BigDecimal currentBalance;
 
     @Enumerated(EnumType.STRING)
@@ -106,5 +106,3 @@ public class Account {
         this.movements = movements;
     }
 }
-
-

@@ -21,13 +21,13 @@ spring:
           time_zone: UTC
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
     listener:
       simple:
-        auto-startup: false
+        auto-startup: true
 
 springdoc:
   api-docs:
