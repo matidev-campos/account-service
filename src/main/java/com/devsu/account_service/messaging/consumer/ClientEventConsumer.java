@@ -6,10 +6,14 @@ import com.devsu.account_service.messaging.event.ClientDeletedEvent;
 import com.devsu.account_service.service.AccountService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Component
 public class ClientEventConsumer {
+
+    private static final Logger log = LoggerFactory.getLogger(ClientEventConsumer.class);
 
     private final AccountService accountService;
 
@@ -18,26 +22,22 @@ public class ClientEventConsumer {
     }
 
     @RabbitListener(queues = RabbitMQConfig.ACCOUNT_QUEUE)
-    public void handleEvent(Object event) {
-
-        if (event instanceof ClientCreatedEvent createdEvent) {
-            handleClientCreated(createdEvent);
-        }
-        else if (event instanceof ClientDeletedEvent deletedEvent) {
-            handleClientDeleted(deletedEvent);
-        }
-    }
-
-    private void handleClientCreated(ClientCreatedEvent event) {
-
+    public void onClientCreated(ClientCreatedEvent event) {
+        log.info(
+                "Received ClientCreatedEvent | clientId={} | name={} | identification={}",
+                event.clientId(),
+                event.name(),
+                event.identification()
+        );
         accountService.handleClientCreated(event.clientId());
     }
 
-    private void handleClientDeleted(ClientDeletedEvent event) {
-
+    @RabbitListener(queues = RabbitMQConfig.ACCOUNT_QUEUE)
+    public void onClientDeleted(ClientDeletedEvent event) {
+        log.info(
+                "Received ClientDeletedEvent | clientId={}",
+                event.clientId()
+        );
         accountService.handleClientDeleted(event.clientId());
     }
 }
-
-
-
